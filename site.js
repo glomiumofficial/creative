@@ -1,10 +1,10 @@
 (function(){
   var props = { accent:'#10AF8B', accentDeep:'#0A6E58', scrollLength:6.2, startZoom:18.5 };
-  var E={}, last={}, vw, vh, span, wmW, wmH, pw, bwEnd, pathLen, t, prev, settled;
+  var E={}, last={}, vw, vh, span, wmW, wmH, pw, bwEnd, t, prev, settled;
   var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   function q(s){ return document.querySelector(s); }
   function grab(){
-    E.inf=q('[data-el="inf"]'); E.trace=q('[data-el="trace"]'); E.dot=q('[data-el="dot"]'); E.line=q('[data-el="line"]'); E.payoff=q('[data-el="payoff"]');
+    E.inf=q('[data-el="inf"]'); E.line=q('[data-el="line"]'); E.payoff=q('[data-el="payoff"]');
     E.wm=q('[data-el="wm"]'); E.nav=q('[data-el="nav"]'); E.cue=q('[data-el="cue"]');
     E.track=q('[data-el="track"]'); E.stage=q('[data-el="stage"]'); last={};
   }
@@ -24,7 +24,6 @@
     pw = E.payoff.scrollWidth || 1;
     var fill = vw < vh ? 0.82 : 0.5;
     bwEnd = Math.max(240, 220.9 * vw / (fill * Math.min(vw, vh)));
-    if (E.trace && !pathLen) { pathLen = E.trace.getTotalLength(); E.trace.style.strokeDasharray = pathLen; }
   }
   function cl(v,a,b){ return v<a?a:v>b?b:v; }
   function seg(t,a,b){ return cl((t-a)/(b-a),0,1); }
@@ -42,23 +41,6 @@
     var vb=(cx-bw/2).toFixed(2)+' '+(cy-bh/2).toFixed(2)+' '+bw.toFixed(2)+' '+bh.toFixed(2);
     if(last.vb!==vb){ last.vb=vb; E.inf.setAttribute('viewBox',vb); }
     set(E.inf,'opacity',(1-seg(t,0.86,0.99)).toFixed(3));
-
-    if (pathLen) {
-      var L=pathLen, tr2=out(seg(t,0.04,0.82));
-      var off=(L*(1-tr2)).toFixed(1);
-      if(last.dash!==off){ last.dash=off; E.trace.style.strokeDashoffset=off; }
-      var tOp=(seg(t,0.01,0.10)*(1-seg(t,0.80,0.94))*0.6).toFixed(3);
-      if(last.tOp!==tOp){ last.tOp=tOp; E.trace.setAttribute('opacity',tOp); }
-      var dOp=seg(t,0.02,0.08)*(1-seg(t,0.74,0.86));
-      var r=dOp>0.01 ? (2.6*bw/vw).toFixed(3) : 0;
-      if(last.r!==r){ last.r=r; E.dot.setAttribute('r',r); }
-      if(r!==0){
-        var p=E.trace.getPointAtLength(L*tr2);
-        E.dot.setAttribute('cx',p.x.toFixed(2));
-        E.dot.setAttribute('cy',p.y.toFixed(2));
-      }
-      E.dot.setAttribute('opacity',dOp.toFixed(3));
-    }
 
     var wp=ease(seg(t,0.06,0.44)), endW=Math.min(190,vw*0.34);
     var s=mix(1,endW/wmW,wp);
