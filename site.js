@@ -42,7 +42,7 @@
     var cx=mix(46,110.4,z)+drift*46*k620, cy=mix(176,98,z)-drift*40*k620;
     var vb=(cx-bw/2).toFixed(2)+' '+(cy-bh/2).toFixed(2)+' '+bw.toFixed(2)+' '+bh.toFixed(2);
     if(last.vb!==vb){ last.vb=vb; E.inf.setAttribute('viewBox',vb); }
-    set(E.inf,'opacity',(1-seg(t,0.86,0.99)).toFixed(3));
+    set(E.inf,'opacity',(ease(seg(t,0.015,0.11))*(1-seg(t,0.86,0.99))).toFixed(3));
     set(E.inf,'transform','translate3d('+(mxv*3).toFixed(2)+'px,'+(myv*2.4).toFixed(2)+'px,0)');
 
     var wp=ease(seg(t,0.06,0.44)), endW=Math.min(190,vw*0.34);
