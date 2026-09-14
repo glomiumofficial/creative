@@ -7,11 +7,11 @@
   function grab(){
     E.inf=q('[data-el="inf"]'); E.line=q('[data-el="line"]'); E.payoff=q('[data-el="payoff"]');
     E.wm=q('[data-el="wm"]'); E.nav=q('[data-el="nav"]'); E.cue=q('[data-el="cue"]');
-    E.track=q('[data-el="track"]'); E.stage=q('[data-el="stage"]'); last={};
+    E.track=q('[data-el="track"]'); E.stage=q('[data-el="stage"]'); E.depth=q('[data-el="depth"]'); last={};
   }
   function apply(){
     var r=document.documentElement.style;
-    r.setProperty('--green', props.accent); r.setProperty('--green-deep', props.accentDeep);
+    r.setProperty('--green', props.accent); r.setProperty('--green-deep', props.accentDeep); r.setProperty('--ink', props.accentDeep);
     var n = props.scrollLength*100;
     E.track.style.height = n + 'vh';
     E.track.style.height = n + 'svh';
@@ -23,8 +23,8 @@
     wmW = E.wm.offsetWidth || vw*0.46;
     wmH = E.wm.offsetHeight || wmW*0.287;
     pw = E.payoff.scrollWidth || 1;
-    var fill = vw < vh ? 0.82 : 0.5;
-    bwEnd = Math.max(240, 220.9 * vw / (fill * Math.min(vw, vh)));
+    var fill = vw < vh ? 0.86 : 0.62;
+    bwEnd = Math.max(120, 160 * vw / (fill * Math.min(vw, vh)));
   }
   function cl(v,a,b){ return v<a?a:v>b?b:v; }
   function seg(t,a,b){ return cl((t-a)/(b-a),0,1); }
@@ -37,12 +37,12 @@
     if(!vw) return;
     var mxv=mx||0, myv=my||0;
     var z=ease(seg(t,0.02,0.72)), drift=ease(seg(t,0.58,1));
-    var k620=(bwEnd||620)/620;
-    var bw=mix((bwEnd||620)/props.startZoom,(bwEnd||620),z), bh=bw*(vh/vw);
-    var cx=mix(46,110.4,z)+drift*46*k620, cy=mix(176,98,z)-drift*40*k620;
+    var BW=bwEnd||512;
+    var bw=mix(BW/props.startZoom,BW,z), bh=bw*(vh/vw);
+    var cx=mix(55,100,z)+drift*BW*0.04, cy=mix(26,50,z)-drift*BW*0.03;
     var vb=(cx-bw/2).toFixed(2)+' '+(cy-bh/2).toFixed(2)+' '+bw.toFixed(2)+' '+bh.toFixed(2);
     if(last.vb!==vb){ last.vb=vb; E.inf.setAttribute('viewBox',vb); }
-    set(E.inf,'opacity',(ease(seg(t,0.015,0.11))*(1-seg(t,0.86,0.99))).toFixed(3));
+    set(E.inf,'opacity',(ease(seg(t,0.015,0.11))*(1-seg(t,0.74,0.82))).toFixed(3));
     set(E.inf,'transform','translate3d('+(mxv*3).toFixed(2)+'px,'+(myv*2.4).toFixed(2)+'px,0)');
 
     var wp=ease(seg(t,0.06,0.44)), endW=Math.min(190,vw*0.34);
@@ -56,13 +56,15 @@
     set(E.nav,'visibility', navOp>0.02?'visible':'hidden');
     set(E.cue,'opacity',(1-seg(t,0,0.06)).toFixed(3));
 
-    set(E.line,'opacity',(seg(t,0.28,0.40)*(1-seg(t,0.50,0.60))).toFixed(3));
-    set(E.line,'transform','translate3d('+(mxv*7).toFixed(2)+'px,'+(mix(30,-20,seg(t,0.24,0.62))+myv*5).toFixed(1)+'px,0)');
+    set(E.line,'opacity',(seg(t,0.40,0.50)*(1-seg(t,0.60,0.68))).toFixed(3));
+    set(E.line,'transform','translate3d('+(mxv*7).toFixed(2)+'px,'+(mix(26,-18,seg(t,0.36,0.70))+myv*5).toFixed(1)+'px,0)');
+    if(E.depth) set(E.depth,'transform','translate3d('+(mxv*-16).toFixed(1)+'px,'+(myv*-12).toFixed(1)+'px,0)');
 
-    var pin=out(seg(t,0.54,0.68)), grow=ease(seg(t,0.68,1));
+    var pin=out(seg(t,0.84,0.92)), grow=ease(seg(t,0.88,1));
     var fsMax=Math.min((vw*0.86)/(pw/100),84);
     var fs=mix(Math.max(13,vw*0.022), Math.max(20,fsMax), grow), k=fs/100;
-    var px=mix(vw*0.56,(vw-pw*k)/2,grow)+mxv*9;
+    var edge=Math.max(16,vw*0.028);
+    var px=cl(mix(vw*0.56,(vw-pw*k)/2,grow)+mxv*9, edge, Math.max(edge, vw-pw*k-edge));
     var py=mix(vh*0.62,vh*0.5,grow)-fs*0.62+myv*7;
     set(E.payoff,'transform','translate3d('+px.toFixed(1)+'px,'+py.toFixed(1)+'px,0) scale('+k.toFixed(4)+')');
     set(E.payoff,'opacity',pin.toFixed(3));
