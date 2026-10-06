@@ -83,6 +83,7 @@ class Component extends DCLogic {
 
   componentDidMount() {
     this.tick(); this.clockT = setInterval(() => this.tick(), 1000);
+    if (/(^|\.)glomium\.co$/.test(location.hostname)) fetch('https://gpyyxvnymmwhpdmijyvb.supabase.co/rest/v1/rpc/log_album_visit', { method: 'POST', headers: { apikey: 'sb_publishable_oesyTPK2JuS1G20t8vS0zw_Yp9bgwd1', 'Content-Type': 'application/json' }, body: JSON.stringify({ p_slug: 'home' }), keepalive: true }).catch(() => {});
     const reduce = this.reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     let done = false;
     // pen stroke wipes the mark on, a single sheen passes along it, then the rest surfaces
